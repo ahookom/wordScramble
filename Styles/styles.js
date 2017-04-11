@@ -11,6 +11,10 @@ let styles = StyleSheet.create({
     flex: 1,
     alignItems: 'flex-end'
   },
+  button: {
+    flex: 1,
+    marginBottom: 50
+  },
   word: {
     flexDirection: 'row',
     justifyContent: 'center',

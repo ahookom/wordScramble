@@ -32,6 +32,10 @@ export default function(state = initialState, action){
     newState.cardCounter++;
   break;
 
+  case 'SET_PLAYER_CARDS':
+    newState.playerCards = action.cards;
+  break;
+
   case 'SEED_WORD':
     newState.word = action.word;
   break;

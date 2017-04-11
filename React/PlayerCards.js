@@ -27,7 +27,7 @@ export default class PlayerCards extends Component{
     if(subtotal<this.state.playerCards.length){
       rows.push(this.state.playerCards.slice(subtotal));
     }
-    return (<View style={styles.playerCards}>{rows.map(row=><View style={styles.playerCardsRow}>
+    return (<View style={styles.playerCards}>{rows.map((row,index)=><View key={index} style={styles.playerCardsRow}>
          {row.map((letter,index)=>{return this.props.renderDraggable(letter,index)})}
         </View>)}</View>
     )

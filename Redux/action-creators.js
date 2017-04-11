@@ -30,6 +30,13 @@ export function addPlayerCard(card){
   }
 }
 
+export function setPlayerCards(array){
+  return {
+    type: 'SET_PLAYER_CARDS',
+    cards: array
+  }
+}
+
 export function setDropLocation(index,layout){
   return {
     type: 'SET_DROP_LOCATION',

@@ -6,13 +6,14 @@ import {
   View,
   PanResponder,
   Animated,
-  Dimensions
+  Dimensions,
+  Button
 } from 'react-native';
 import Word from './Word';
 import PlayerCards from './PlayerCards';
 import styles from '../Styles/styles.js';
 import store from '../Redux/store.js';
-import { updateWordAndRemoveCard, setCardLocation, setDropLocation, addPlayerCard, seedWord } from '../Redux/action-creators.js';
+import { updateWordAndRemoveCard, setCardLocation, setDropLocation, addPlayerCard, seedWord, setPlayerCards } from '../Redux/action-creators.js';
 import Dictionary from '../Dictionary/Dictionary.js';
 import wordlist from '../Dictionary/wordlist.js';
 
@@ -32,17 +33,19 @@ export default class Viewport extends Component {
     this.createPanResponder = this.createPanResponder.bind(this);
     this.handleDropZone = this.handleDropZone.bind(this);
     this.isValidWord = this.isValidWord.bind(this);
+    this.reset = this.reset.bind(this);
   }
 
   componentDidMount() {
     this.unsubscribe = store.subscribe(() => { this.setState(store.getState()) });
     this.dictionary.bulkAdd(wordlist);
-    store.dispatch(seedWord(randomWord()));
-    let currentCards =[];
-    while(currentCards.length<STARTINGCARDS){
-      currentCards.push(getNewCard(currentCards,this.state.word));
+    let newWord = randomWord();
+    store.dispatch(seedWord(newWord));
+    let currentCards = [];
+    while (currentCards.length < STARTINGCARDS) {
+      currentCards.push(getNewCard(currentCards, newWord));
     }
-    currentCards.forEach(card=>store.dispatch(addPlayerCard(card)));
+    store.dispatch(setPlayerCards(currentCards));
   }
 
   componentWillUnmount() {
@@ -50,7 +53,7 @@ export default class Viewport extends Component {
   }
 
   isDropZone(moveX, moveY) {
-    if (moveX >  this.dropZone.x && moveY >  this.dropZone.y && moveY < (this.dropZone.y + this.dropZone.height) && moveX < (this.dropZone.x + this.dropZone.width)){
+    if (moveX > this.dropZone.x && moveY > this.dropZone.y && moveY < (this.dropZone.y + this.dropZone.height) && moveX < (this.dropZone.x + this.dropZone.width)) {
       return true;
     } else {
       return false;
@@ -64,7 +67,7 @@ export default class Viewport extends Component {
           <Text style={styles.title}>WordScramble!</Text>
         </View>
         <View
-onLayout={event => this.dropZone = event.nativeEvent.layout}
+          onLayout={event => this.dropZone = event.nativeEvent.layout}
           style={styles.dropZone}>
 
           <Word word={this.state.word} />
@@ -72,8 +75,24 @@ onLayout={event => this.dropZone = event.nativeEvent.layout}
         </View>
 
         <PlayerCards style={styles.playerCards} renderDraggable={this.renderDraggable} />
+        <Button
+          onPress={this.reset}
+          title="RESET"
+          color="#841584"
+          style={styles.button}
+          accessibilityLabel="Reset button"
+        />
       </View>
     );
+  }
+  reset() {
+    let newWord = randomWord();
+    store.dispatch(seedWord(randomWord()));
+    let currentCards = [];
+    while (currentCards.length < STARTINGCARDS) {
+      currentCards.push(getNewCard(currentCards, newWord));
+    }
+    store.dispatch(setPlayerCards(currentCards));
   }
 
   addElementToViewport(str) {
@@ -85,25 +104,26 @@ onLayout={event => this.dropZone = event.nativeEvent.layout}
 
   renderDraggable(str, index) {
     if (!this.pan[str]) this.pan[str] = new Animated.ValueXY;
-    if(!this.panResponders[str]) this.createPanResponder(str);
+    if (!this.panResponders[str]) this.createPanResponder(str);
     let panResponder = this.panResponders[str];
     return (
-        <Animated.View
-          {...panResponder.panHandlers}
-          ref={this.addElementToViewport(str)}
-          onLayout={setLocationOfCard(str)}
-          style={[this.pan[str].getLayout(), styles.circle, styles.draggableContainer]}>
-          <Text key={index} style={styles.text}>{str}</Text>
-        </Animated.View>
+      <Animated.View
+        key={index}
+        {...panResponder.panHandlers}
+        ref={this.addElementToViewport(str)}
+        onLayout={setLocationOfCard(str)}
+        style={[this.pan[str].getLayout(), styles.circle, styles.draggableContainer]}>
+        <Text style={styles.text}>{str}</Text>
+      </Animated.View>
     );
   }
 
-  handleDropZone(str, xCoord){
+  handleDropZone(str, xCoord) {
     let index = this.getIndex(xCoord);
     let newWord = this.state.word.split('');
     newWord.splice(index, 1, str);
     newWord = newWord.join('');
-    if (this.isValidWord(newWord)){
+    if (this.isValidWord(newWord)) {
       store.dispatch(updateWordAndRemoveCard(newWord, str));
       let newCard = getNewCard(this.state.playerCards, newWord);
       store.dispatch(addPlayerCard(newCard));
@@ -112,23 +132,23 @@ onLayout={event => this.dropZone = event.nativeEvent.layout}
     return false;
   }
 
-  getIndex(xCoord){
+  getIndex(xCoord) {
     xCoord -= this.dropZone.x;
     let letters = this.state.dropLocations;
-    for (let i = 0;i < Object.keys(letters).length;i++){
+    for (let i = 0; i < Object.keys(letters).length; i++) {
       if (xCoord > letters[i].x && xCoord < letters[i].x + letters[i].width) return i;
     }
   }
-  isValidWord(word){
-  return this.dictionary.search(word);
+  isValidWord(word) {
+    return this.dictionary.search(word);
   }
 
   createPanResponder(str) {
     this.panResponders[str] = PanResponder.create({
       onStartShouldSetPanResponder: () => true,
-      onPanResponderGrant: (event, gesture)=>{
-        this.pan[str].setOffset({x: 0, y: 0});
-        this.pan[str].setValue({x: 0, y: 0});
+      onPanResponderGrant: (event, gesture) => {
+        this.pan[str].setOffset({ x: 0, y: 0 });
+        this.pan[str].setValue({ x: 0, y: 0 });
       },
       onPanResponderMove: (event, gesture) => {
         this.pan[str].x.setValue(gesture.dx);
@@ -149,8 +169,8 @@ onLayout={event => this.dropZone = event.nativeEvent.layout}
   }
 }
 
-function randomWord(){
-  return wordlist[Math.floor(Math.random()*wordlist.length)];
+function randomWord() {
+  return wordlist[Math.floor(Math.random() * wordlist.length)];
 }
 
 function setLocationOfCard(str) {
@@ -159,15 +179,17 @@ function setLocationOfCard(str) {
   }
 }
 
-function getNewCard(currentCards, word){
+function getNewCard(currentCards, word) {
   let invalid = currentCards.join('') + word;
 
   let letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
   let pick = letters.charAt(Math.floor(Math.random() * 26));
 
-  while (invalid.includes(pick)){
+  while (invalid.includes(pick)) {
     pick = letters.charAt(Math.floor(Math.random() * 26));
   }
   return pick;
 }
+
+
