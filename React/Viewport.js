@@ -16,6 +16,8 @@ import { updateWordAndRemoveCard, setCardLocation, setDropLocation, addPlayerCar
 import Dictionary from '../Dictionary/Dictionary.js';
 import wordlist from '../Dictionary/wordlist.js';
 
+const STARTINGCARDS = 10;
+
 export default class Viewport extends Component {
   constructor(props) {
     super(props);
@@ -35,7 +37,12 @@ export default class Viewport extends Component {
   componentDidMount() {
     this.unsubscribe = store.subscribe(() => { this.setState(store.getState()) });
     this.dictionary.bulkAdd(wordlist);
-    store.dispatch(seedWord());
+    store.dispatch(seedWord(randomWord()));
+    let currentCards =[];
+    while(currentCards.length<STARTINGCARDS){
+      currentCards.push(getNewCard(currentCards,this.state.word));
+    }
+    currentCards.forEach(card=>store.dispatch(addPlayerCard(card)));
   }
 
   componentWillUnmount() {
@@ -78,12 +85,8 @@ onLayout={event => this.dropZone = event.nativeEvent.layout}
 
   renderDraggable(str, index) {
     if (!this.pan[str]) this.pan[str] = new Animated.ValueXY;
-    let panResponder;
-    if (!this.panResponders[str]){
-      panResponder = this.createPanResponder(str);
-    } else {
-      panResponder = this.panResponders[str];
-    }
+    if(!this.panResponders[str]) this.createPanResponder(str);
+    let panResponder = this.panResponders[str];
     return (
         <Animated.View
           {...panResponder.panHandlers}
@@ -123,13 +126,17 @@ onLayout={event => this.dropZone = event.nativeEvent.layout}
   createPanResponder(str) {
     this.panResponders[str] = PanResponder.create({
       onStartShouldSetPanResponder: () => true,
+      onPanResponderGrant: (event, gesture)=>{
+        this.pan[str].setOffset({x: 0, y: 0});
+        this.pan[str].setValue({x: 0, y: 0});
+      },
       onPanResponderMove: (event, gesture) => {
         this.pan[str].x.setValue(gesture.dx);
         this.pan[str].y.setValue(gesture.dy);
       },
       onPanResponderRelease: (e, gesture) => {
         if (this.isDropZone(gesture.moveX, gesture.moveY) && this.handleDropZone(str, gesture.moveX)) {
-          this.panResponders[str] = null;
+          this.pan[str] = null;
         } else {
           Animated.spring(
             this.pan[str],
@@ -142,6 +149,9 @@ onLayout={event => this.dropZone = event.nativeEvent.layout}
   }
 }
 
+function randomWord(){
+  return wordlist[Math.floor(Math.random()*wordlist.length)];
+}
 
 function setLocationOfCard(str) {
   return (event) => {
