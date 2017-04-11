@@ -1,5 +1,12 @@
 
 
+export function seedWord(word){
+  return {
+    type: 'SEED_WORD',
+    word
+  }
+}
+
 export function setCardLocation(letter, layout){
   return {
     type: 'SET_CARD_LOCATION',

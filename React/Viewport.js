@@ -12,7 +12,7 @@ import Word from './Word';
 import PlayerCards from './PlayerCards';
 import styles from '../Styles/styles.js';
 import store from '../Redux/store.js';
-import { updateWordAndRemoveCard, setCardLocation, setDropLocation, addPlayerCard } from '../Redux/action-creators.js';
+import { updateWordAndRemoveCard, setCardLocation, setDropLocation, addPlayerCard, seedWord } from '../Redux/action-creators.js';
 import Dictionary from '../Dictionary/Dictionary.js';
 import wordlist from '../Dictionary/wordlist.js';
 
@@ -35,6 +35,7 @@ export default class Viewport extends Component {
   componentDidMount() {
     this.unsubscribe = store.subscribe(() => { this.setState(store.getState()) });
     this.dictionary.bulkAdd(wordlist);
+    store.dispatch(seedWord());
   }
 
   componentWillUnmount() {

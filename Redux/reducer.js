@@ -1,10 +1,11 @@
 import styles from '../Styles/styles.js';
 
 let initialState = {
-  word: 'SNAP',
-  playerCards: ['T', 'P', 'B', 'Q', 'L','A','F'],
+  word: '',
+  playerCards: [],
   dropLocations: {},
-  cardLocations: {}
+  cardLocations: {},
+  cardCounter: 0
 }
 
 export default function(state = initialState, action){
@@ -28,9 +29,11 @@ export default function(state = initialState, action){
 
   case 'ADD_PLAYER_CARD':
     newState.playerCards = [...newState.playerCards,action.card];
+    newState.cardCounter++;
   break;
 
-  case 'RECEIVE_DICTIONARY':
+  case 'SEED_WORD':
+    newState.word = action.word;
   break;
 
   case 'REMOVE_LETTER':
