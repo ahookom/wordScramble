@@ -120,7 +120,7 @@ export default class Viewport extends Component {
       },
       onPanResponderRelease: (e, gesture) => {
         if (this.isDropZone(gesture.moveX, gesture.moveY)&&this.handleDropZone(str, gesture.moveX)) {
-
+          this.panResponders[str]=null;
         } else {
           Animated.spring(
             this.pan[str],

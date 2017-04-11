@@ -55,14 +55,14 @@ let styles = StyleSheet.create({
   currentLetters: {
     flex: 2,
     textAlign: 'center',
-    color: '#6495ed',
+    color: '#fff',
     fontSize: 60,
   },
   draggableContainer: {
     marginLeft: 3,
     marginRight: 3,
     marginTop: 3,
-    marginBottom: 3,
+    marginBottom: 3
   },
   circle: {
     backgroundColor: '#1abc9c',
