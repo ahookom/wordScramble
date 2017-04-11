@@ -1,6 +1,8 @@
 import React, { Component, } from 'react';
 import { View, Text } from 'react-native';
 import  styles  from '../Styles/styles.js';
+import store from '../Redux/store.js';
+import {setDropLocation} from '../Redux/action-creators.js';
 
 class Word extends Component {
 
@@ -13,11 +15,15 @@ class Word extends Component {
     this.state = {}
   }
 
+  setDropZoneValues(index) {
+    return (event)=>store.dispatch(setDropLocation(index, Object.assign({}, event.nativeEvent.layout)));
+  }
+
   render() {
     return (
       <View style={styles.word}>
         {this.props.word.split('').map((letter, key) => (
-          <Text style={styles.currentLetters} key={key}>{letter}</Text>
+          <Text onLayout={this.setDropZoneValues(key)} style={styles.currentLetters} key={key}>{letter}</Text>
         ))}
       </View>
     );

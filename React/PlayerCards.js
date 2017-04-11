@@ -9,13 +9,27 @@ export default class PlayerCards extends Component{
     this.state = {playerCards: store.getState().playerCards};
   }
 
+  componentDidMount() {
+    this.unsubscribe = store.subscribe(() => { this.setState({playerCards: store.getState().playerCards}) });
+  }
 
+  componentWillUnmount() {
+    this.unsubscribe();
+  }
 
   render(){
-    return (
-        <View style={styles.playerCards}>
-         {this.state.playerCards.map((letter,index)=>{return this.props.renderDraggable(letter,index)})}
-        </View>
+    let rows =[];
+    let subtotal=0;
+    while(this.state.playerCards.length-subtotal>5){
+      rows.push(this.state.playerCards.slice(subtotal,subtotal+5));
+      subtotal+=5;
+    }
+    if(subtotal<this.state.playerCards.length){
+      rows.push(this.state.playerCards.slice(subtotal));
+    }
+    return (<View style={styles.playerCards}>{rows.map(row=><View style={styles.playerCardsRow}>
+         {row.map((letter,index)=>{return this.props.renderDraggable(letter,index)})}
+        </View>)}</View>
     )
   }
 }

@@ -9,6 +9,7 @@ let styles = StyleSheet.create({
   },
   topPad: {
     flex: 1,
+    alignItems: 'flex-end'
   },
   word: {
     flexDirection: 'row',
@@ -18,17 +19,22 @@ let styles = StyleSheet.create({
     backgroundColor: '#2c3e50',
     marginLeft: 50,
     marginRight: 50,
+    marginTop: 50,
     borderRadius: 10,
     overflow: 'hidden'
   },
   playerCards: {
     flex: 2,
-    flexDirection: 'row',
-    alignItems: 'stretch',
+    flexDirection: 'column',
     justifyContent: 'center',
-    marginTop: 60,
+    alignItems: 'flex-start',
+    marginTop: 0,
     marginLeft: 30,
     marginRight: 30
+  },
+  playerCardsRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start'
   },
   text: {
     marginTop: 0,
@@ -47,13 +53,16 @@ let styles = StyleSheet.create({
     fontSize: 50,
   },
   currentLetters: {
-    flex: 1,
+    flex: 2,
     textAlign: 'center',
     color: '#6495ed',
     fontSize: 60,
   },
   draggableContainer: {
-    flex: 1
+    marginLeft: 3,
+    marginRight: 3,
+    marginTop: 3,
+    marginBottom: 3,
   },
   circle: {
     backgroundColor: '#1abc9c',
