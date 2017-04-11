@@ -23,6 +23,12 @@ let styles = StyleSheet.create({
   },
   playerCards: {
     flex: 2,
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    justifyContent: 'center',
+    marginTop: 60,
+    marginLeft: 30,
+    marginRight: 30
   },
   text: {
     marginTop: 0,

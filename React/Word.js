@@ -16,7 +16,7 @@ class Word extends Component {
   render() {
     return (
       <View style={styles.word}>
-        {this.props.word.map((letter, key) => (
+        {this.props.word.split('').map((letter, key) => (
           <Text style={styles.currentLetters} key={key}>{letter}</Text>
         ))}
       </View>
@@ -25,3 +25,5 @@ class Word extends Component {
 }
 
 export default Word;
+
+

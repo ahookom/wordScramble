@@ -1,8 +1,8 @@
-
+import styles from '../Styles/styles.js';
 
 let initialState={
-  word:'',
-  player_letters:[],
+  word:'SNAP',
+  playerCards:['T','P','B','Q',"P","L"],
   dropLocations:[]
 }
 

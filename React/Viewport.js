@@ -9,41 +9,52 @@ import {
   Dimensions
 } from 'react-native';
 import Word from './Word';
+import PlayerCards from './PlayerCards';
 import styles from '../Styles/styles.js';
+import store from '../Redux/store.js';
+
+
 
 export default class Viewport extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      pan: new Animated.ValueXY(), //Step 1
-      word: ['A', 'B', 'C', 'D'],
+    this.state = Object.assign(store.getState(),{
+      pan: new Animated.ValueXY,
       dropZoneValues: {},
-    };
+    });
+
+    this.renderDraggable = this.renderDraggable.bind(this);
 
     this.panResponder = PanResponder.create({
-      //Step 2
       onStartShouldSetPanResponder: () => true,
       onPanResponderMove: Animated.event([
         null,
         {
-          //Step 3
           dx: this.state.pan.x,
           dy: this.state.pan.y,
         },
       ]),
       onPanResponderRelease: (e, gesture) => {
         if (this.isDropZone(gesture)) {
-          this.setState({ word: ['G', 'I', 'R', 'L'] });
+          this.setState({ word: 'GIRL' });
         } else {
           Animated.spring(
-            //Step 1
-            this.state.pan, //Step 2
-            { toValue: { x: 0, y: 0 } } //Step 3
+            this.state.pan,
+            { toValue: { x: 0, y: 0 } }
           ).start();
         }
-      }, //Step 4
+      },
     });
+  }
+
+  componentDidMount(){
+    this.unsubscribe = store.subscribe(()=>{this.setState(store.getState())});
+
+  }
+
+  componentWillUnmount(){
+    this.unsubscribe();
   }
 
   isDropZone(gesture) {
@@ -52,7 +63,6 @@ export default class Viewport extends Component {
   }
 
   setDropZoneValues(event) {
-    //Step 1
     this.setState({
       dropZoneValues: event.nativeEvent.layout,
     });
@@ -62,32 +72,29 @@ export default class Viewport extends Component {
     return (
       <View style={styles.mainContainer}>
         <View style={styles.topPad}>
-          <Text style={styles.title}>WordScramble</Text>
+          <Text style={styles.title}>WordScramble!</Text>
         </View>
         <View
           onLayout={this.setDropZoneValues.bind(this)}
           style={styles.dropZone}>
 
-          <Word word={this.state.word} style={styles.text} styles={styles} />
+          <Word word={this.state.word} />
 
         </View>
 
-        <View style={styles.playerCards}>
-          {this.renderDraggable('a')}
-          {this.renderDraggable('b')}
-          {this.renderDraggable('t')}
-        </View>
+        <PlayerCards style={styles.playerCards} renderDraggable={this.renderDraggable} />
       </View>
     );
   }
 
-  renderDraggable(str) {
+  renderDraggable(str,index) {
+
     return (
       <View style={styles.draggableContainer}>
         <Animated.View
           {...this.panResponder.panHandlers}
           style={[this.state.pan.getLayout(), styles.circle]}>
-          <Text style={styles.text}>{str}</Text>
+          <Text key={index} style={styles.text}>{str}</Text>
         </Animated.View>
       </View>
     );
