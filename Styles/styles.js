@@ -7,6 +7,11 @@ let styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
   },
+  border: {
+    width: 5,
+    height: 50,
+    backgroundColor: '#2a3a30'
+  },
   topPad: {
     flex: 1,
     alignItems: 'flex-end'
@@ -56,11 +61,24 @@ let styles = StyleSheet.create({
     color: '#6495ed',
     fontSize: 50,
   },
-  currentLetters: {
+  currentLetterBox: {
+
+  },
+  center: {
+    alignItems: 'center'
+  },
+  currentLetter:{
     flex: 2,
-    textAlign: 'center',
-    color: '#fff',
+    flexDirection: 'row',
+    alignItems: 'center',
     fontSize: 60,
+    color: '#fff',
+    marginBottom:8,
+    marginLeft:8,
+    marginRight:8,
+    marginTop: 8,
+    textAlign: 'center',
+    backgroundColor: '#aaa'
   },
   draggableContainer: {
     marginLeft: 3,
