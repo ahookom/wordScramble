@@ -71,14 +71,14 @@ let styles = StyleSheet.create({
     flex: 2,
     flexDirection: 'row',
     alignItems: 'center',
-    fontSize: 60,
+    fontSize: 30,
     color: '#fff',
     marginBottom:8,
     marginLeft:8,
     marginRight:8,
     marginTop: 8,
     textAlign: 'center',
-    backgroundColor: '#aaa'
+    backgroundColor: '#292929'
   },
   draggableContainer: {
     marginLeft: 3,

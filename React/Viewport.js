@@ -30,7 +30,8 @@ export default class Viewport extends Component {
     this.dictionary = new Dictionary();
     this.renderDraggable = this.renderDraggable.bind(this);
     this.addElementToViewport = this.addElementToViewport.bind(this);
-    this.createPanResponder = this.createPanResponder.bind(this);
+    this.createCardResponder = this.createCardResponder.bind(this);
+    this.createLetterResponder = this.createLetterResponder.bind(this);
     this.handleDropZone = this.handleDropZone.bind(this);
     this.isValidWord = this.isValidWord.bind(this);
     this.reset = this.reset.bind(this);
@@ -70,7 +71,7 @@ export default class Viewport extends Component {
           onLayout={event => this.dropZone = event.nativeEvent.layout}
           style={styles.dropZone}>
 
-          <Word word={this.state.word} />
+          <Word word={this.state.word} createLetterResponder={this.createLetterResponder} />
 
         </View>
 
@@ -104,7 +105,7 @@ export default class Viewport extends Component {
 
   renderDraggable(str, index) {
     if (!this.pan[str]) this.pan[str] = new Animated.ValueXY;
-    if (!this.panResponders[str]) this.createPanResponder(str);
+    if (!this.panResponders[str]) this.createCardResponder(str);
     let panResponder = this.panResponders[str];
     return (
       <Animated.View
@@ -121,9 +122,13 @@ export default class Viewport extends Component {
   handleDropZone(str, xCoord) {
     let index = this.getIndex(xCoord);
     let newWord = this.state.word.split('');
-    newWord.splice(index, 1, str);
+    if(index%1){
+      newWord.splice(index+.5,0,str);
+    }else{
+      newWord.splice(index, 1, str);
+    }
     newWord = newWord.join('');
-    if (this.isValidWord(newWord)) {
+    if (!this.isValidWord(newWord)) {
       store.dispatch(updateWordAndRemoveCard(newWord, str));
       let newCard = getNewCard(this.state.playerCards, newWord);
       store.dispatch(addPlayerCard(newCard));
@@ -135,15 +140,42 @@ export default class Viewport extends Component {
   getIndex(xCoord) {
     xCoord -= this.dropZone.x;
     let letters = this.state.dropLocations;
-    for (let i = 0; i < Object.keys(letters).length; i++) {
+    for (var i = 0; i < Object.keys(letters).length; i++) {
+      if (xCoord< letters[i].x)return i-0.5;
       if (xCoord > letters[i].x && xCoord < letters[i].x + letters[i].width) return i;
     }
+    return i-0.5;
   }
   isValidWord(word) {
     return this.dictionary.search(word);
   }
 
-  createPanResponder(str) {
+  createCardResponder(str) {
+    this.panResponders[str] = PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onPanResponderGrant: (event, gesture) => {
+        this.pan[str].setOffset({ x: 0, y: 0 });
+        this.pan[str].setValue({ x: 0, y: 0 });
+      },
+      onPanResponderMove: (event, gesture) => {
+        this.pan[str].x.setValue(gesture.dx);
+        this.pan[str].y.setValue(gesture.dy);
+      },
+      onPanResponderRelease: (e, gesture) => {
+        if (this.isDropZone(gesture.moveX, gesture.moveY) && this.handleDropZone(str, gesture.moveX)) {
+          this.pan[str] = null;
+        } else {
+          Animated.spring(
+            this.pan[str],
+            { toValue: { x: 0, y: 0 } }
+          ).start();
+        }
+      },
+    })
+    return this.panResponders[str];
+  }
+
+  createLetterResponder(str) {
     this.panResponders[str] = PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onPanResponderGrant: (event, gesture) => {
