@@ -75,7 +75,7 @@ export default class Viewport extends Component {
     seedLetterTable();
     let currentCards = [];
     while (currentCards.length < STARTINGCARDS) {
-      currentCards.push(getNewCard(currentCards, newWord));
+      currentCards.push(getNewCard(currentCards, newWord, this.state.mostRecentPlayerCards));
     }
     store.dispatch(setPlayerCards(currentCards));
 
@@ -124,7 +124,7 @@ export default class Viewport extends Component {
     store.dispatch(seedWord(randomWord()));
     let currentCards = [];
     while (currentCards.length < STARTINGCARDS) {
-      currentCards.push(getNewCard(currentCards, newWord));
+      currentCards.push(getNewCard(currentCards, newWord, this.state.mostRecentPlayerCards));
     }
     store.dispatch(setPlayerCards(currentCards));
   }
@@ -163,7 +163,7 @@ export default class Viewport extends Component {
     newWord = newWord.join('');
     if (this.isValidWord(newWord)) {
       store.dispatch(updateWordAndRemoveCard(newWord, str));
-      let newCard = getNewCard(this.state.playerCards, newWord);
+      let newCard = getNewCard(this.state.playerCards, newWord, this.state.mostRecentPlayerCards);
       store.dispatch(addPlayerCard(newCard));
       return true;
     }
@@ -258,8 +258,8 @@ function setLocationOfCard(str) {
   }
 }
 
-function getNewCard(currentCards, word) {
-  let invalid = currentCards.join('') + word;
+function getNewCard(currentCards, word, mostRecent) {
+  let invalid = currentCards.join('') + word + mostRecent.join('');
 
   let letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 

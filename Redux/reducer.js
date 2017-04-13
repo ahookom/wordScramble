@@ -5,7 +5,8 @@ let initialState = {
   playerCards: [],
   dropLocations: {},
   cardLocations: {},
-  cardCounter: 0
+  cardCounter: 0,
+  mostRecentPlayerCards: []
 }
 
 export default function(state = initialState, action){
@@ -25,6 +26,7 @@ export default function(state = initialState, action){
   case 'UPDATE_WORD':
     newState.word = action.word;
     newState.playerCards = newState.playerCards.filter(card=>card!==action.card);
+    newState.mostRecentPlayerCards = [...newState.mostRecentPlayerCards.slice(-5), action.card];
   break;
 
   case 'ADD_PLAYER_CARD':
