@@ -10,6 +10,7 @@ export default class Letter extends Component{
     super(props);
     this.state = {responder:{}};
     this.letterResponders = {};
+    this.isValidWord=this.props.isValidWord;
   }
 
   componentDidMount() {
@@ -20,6 +21,12 @@ export default class Letter extends Component{
 
   componentWillUnmount() {
 
+  }
+
+  makesValidWord(index){
+    let newWord = this.props.word.split('');
+    newWord.splice(index,1);
+    return this.isValidWord(newWord.join(''));
   }
 
   createLetterResponder(index) {
@@ -34,8 +41,9 @@ export default class Letter extends Component{
         this.panLetter.x.setValue(gesture.dx);
         this.panLetter.y.setValue(gesture.dy);
       },
+
       onPanResponderRelease: (e, gesture) => {
-        if (Math.abs(gesture.dx)+Math.abs(gesture.dy)>10){
+        if (Math.abs(gesture.dx)+Math.abs(gesture.dy)>10&&this.makesValidWord(index)){
           store.dispatch(removeLetter(index));
           this.panLetter.setOffset({ x: 0, y: 0 });
           this.panLetter.setValue({ x: 0, y: 0 });

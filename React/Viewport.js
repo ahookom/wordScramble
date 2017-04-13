@@ -16,6 +16,7 @@ import store from '../Redux/store.js';
 import { removeLetter, updateWordAndRemoveCard, setCardLocation, setDropLocation, addPlayerCard, seedWord, setPlayerCards } from '../Redux/action-creators.js';
 import Dictionary from '../Dictionary/Dictionary.js';
 import wordlist from '../Dictionary/wordlist.js';
+import commonWordList from '../Dictionary/commonwordlist.js';
 
 const STARTINGCARDS = 10;
 
@@ -41,7 +42,7 @@ export default class Viewport extends Component {
 
   componentDidMount() {
     this.unsubscribe = store.subscribe(() => { this.setState(store.getState()) });
-    this.dictionary.bulkAdd(wordlist);
+    this.dictionary.bulkAddWords(wordlist);
     let newWord = randomWord();
     store.dispatch(seedWord(newWord));
     let currentCards = [];
@@ -64,7 +65,7 @@ export default class Viewport extends Component {
   }
 
   render() {
-    console.log('word',this.state.word);
+
     return (
       <View style={styles.mainContainer}>
         <View style={styles.topPad}>
@@ -74,7 +75,7 @@ export default class Viewport extends Component {
           onLayout={event => this.dropZone = event.nativeEvent.layout}
           style={styles.dropZone}>
 
-          <Word word={this.state.word} />
+          <Word word={this.state.word} isValidWord = {this.isValidWord} />
 
         </View>
 
@@ -131,7 +132,7 @@ export default class Viewport extends Component {
       newWord.splice(index, 1, str);
     }
     newWord = newWord.join('');
-    if (!this.isValidWord(newWord)) {
+    if (this.isValidWord(newWord)) {
       store.dispatch(updateWordAndRemoveCard(newWord, str));
       let newCard = getNewCard(this.state.playerCards, newWord);
       store.dispatch(addPlayerCard(newCard));
@@ -182,7 +183,11 @@ export default class Viewport extends Component {
 }
 
 function randomWord() {
-  return wordlist[Math.floor(Math.random() * wordlist.length)];
+  let temp = commonWordList[Math.floor(Math.random() * commonWordList.length)];
+  while(temp.length!==4){
+    temp = commonWordList[Math.floor(Math.random() * commonWordList.length)];
+  }
+  return temp;
 }
 
 function setLocationOfCard(str) {

@@ -25,7 +25,7 @@ class Word extends Component {
     return (
       <View style={styles.word}>
         {this.props.word.split('').map((letter, key) => (
-          <Letter key={key} letter={letter} index={key} wordLength={this.props.word.length}/>
+          <Letter isValidWord={this.props.isValidWord} key={key} letter={letter} index={key} wordLength={this.props.word.length} word={this.props.word} />
         ))}
       </View>
     );
