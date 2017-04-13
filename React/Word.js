@@ -4,6 +4,7 @@ import  styles  from '../Styles/styles.js';
 import store from '../Redux/store.js';
 import {setDropLocation} from '../Redux/action-creators.js';
 import Border from './Border.js';
+import Letter from './Letter.js';
 
 class Word extends Component {
 
@@ -24,7 +25,7 @@ class Word extends Component {
     return (
       <View style={styles.word}>
         {this.props.word.split('').map((letter, key) => (
-          <Text onLayout={this.setDropZoneValues(key)} key={key} style={styles.currentLetter}>{letter}</Text>
+          <Letter key={key} letter={letter} index={key} wordLength={this.props.word.length}/>
         ))}
       </View>
     );

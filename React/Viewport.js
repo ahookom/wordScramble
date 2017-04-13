@@ -13,7 +13,7 @@ import Word from './Word';
 import PlayerCards from './PlayerCards';
 import styles from '../Styles/styles.js';
 import store from '../Redux/store.js';
-import { updateWordAndRemoveCard, setCardLocation, setDropLocation, addPlayerCard, seedWord, setPlayerCards } from '../Redux/action-creators.js';
+import { removeLetter, updateWordAndRemoveCard, setCardLocation, setDropLocation, addPlayerCard, seedWord, setPlayerCards } from '../Redux/action-creators.js';
 import Dictionary from '../Dictionary/Dictionary.js';
 import wordlist from '../Dictionary/wordlist.js';
 
@@ -25,13 +25,15 @@ export default class Viewport extends Component {
 
     this.state = store.getState();
     this.pan = {};
+    this.panLetter = {};
     this.panResponders = {};
+    this.letterResponders = {};
     this.playerCards = {};
     this.dictionary = new Dictionary();
     this.renderDraggable = this.renderDraggable.bind(this);
     this.addElementToViewport = this.addElementToViewport.bind(this);
     this.createCardResponder = this.createCardResponder.bind(this);
-    this.createLetterResponder = this.createLetterResponder.bind(this);
+    // this.createLetterResponder = this.createLetterResponder.bind(this);
     this.handleDropZone = this.handleDropZone.bind(this);
     this.isValidWord = this.isValidWord.bind(this);
     this.reset = this.reset.bind(this);
@@ -62,6 +64,7 @@ export default class Viewport extends Component {
   }
 
   render() {
+    console.log('word',this.state.word);
     return (
       <View style={styles.mainContainer}>
         <View style={styles.topPad}>
@@ -71,7 +74,7 @@ export default class Viewport extends Component {
           onLayout={event => this.dropZone = event.nativeEvent.layout}
           style={styles.dropZone}>
 
-          <Word word={this.state.word} createLetterResponder={this.createLetterResponder} />
+          <Word word={this.state.word} />
 
         </View>
 
@@ -175,30 +178,7 @@ export default class Viewport extends Component {
     return this.panResponders[str];
   }
 
-  createLetterResponder(str) {
-    this.panResponders[str] = PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onPanResponderGrant: (event, gesture) => {
-        this.pan[str].setOffset({ x: 0, y: 0 });
-        this.pan[str].setValue({ x: 0, y: 0 });
-      },
-      onPanResponderMove: (event, gesture) => {
-        this.pan[str].x.setValue(gesture.dx);
-        this.pan[str].y.setValue(gesture.dy);
-      },
-      onPanResponderRelease: (e, gesture) => {
-        if (this.isDropZone(gesture.moveX, gesture.moveY) && this.handleDropZone(str, gesture.moveX)) {
-          this.pan[str] = null;
-        } else {
-          Animated.spring(
-            this.pan[str],
-            { toValue: { x: 0, y: 0 } }
-          ).start();
-        }
-      },
-    })
-    return this.panResponders[str];
-  }
+
 }
 
 function randomWord() {

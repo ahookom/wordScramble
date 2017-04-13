@@ -41,6 +41,9 @@ export default function(state = initialState, action){
   break;
 
   case 'REMOVE_LETTER':
+    let temp = newState.word.split('')
+    temp.splice(action.index,1);
+    newState.word = temp.join('');
   break;
   }
 

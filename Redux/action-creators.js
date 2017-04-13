@@ -7,6 +7,13 @@ export function seedWord(word){
   }
 }
 
+export function removeLetter(index){
+  return {
+    type: 'REMOVE_LETTER',
+    index
+  }
+}
+
 export function setCardLocation(letter, layout){
   return {
     type: 'SET_CARD_LOCATION',

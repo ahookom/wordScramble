@@ -61,8 +61,9 @@ let styles = StyleSheet.create({
     color: '#6495ed',
     fontSize: 50,
   },
-  currentLetterBox: {
-
+  letter: {
+    textAlign: 'center',
+    color: '#fff'
   },
   center: {
     alignItems: 'center'
@@ -70,15 +71,14 @@ let styles = StyleSheet.create({
   currentLetter:{
     flex: 2,
     flexDirection: 'row',
-    alignItems: 'center',
-    fontSize: 30,
-    color: '#fff',
+    justifyContent: 'center',
+    alignContent: 'center',
     marginBottom:8,
     marginLeft:8,
     marginRight:8,
     marginTop: 8,
-    textAlign: 'center',
-    backgroundColor: '#292929'
+    backgroundColor: '#1abc9c',
+    borderRadius: 5
   },
   draggableContainer: {
     marginLeft: 3,
