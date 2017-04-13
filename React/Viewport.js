@@ -26,9 +26,7 @@ export default class Viewport extends Component {
 
     this.state = store.getState();
     this.pan = {};
-    this.panLetter = {};
     this.panResponders = {};
-    this.letterResponders = {};
     this.playerCards = {};
     this.dictionary = new Dictionary();
     this.renderDraggable = this.renderDraggable.bind(this);
