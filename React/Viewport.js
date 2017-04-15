@@ -13,8 +13,8 @@ import Word from './Word';
 import PlayerCards from './PlayerCards';
 import styles from '../Styles/styles.js';
 import store from '../Redux/store.js';
-import { removeLetter, updateWordAndRemoveCard, setCardLocation, setDropLocation, addPlayerCard, seedWord, setPlayerCards } from '../Redux/action-creators.js';
-import { isValidWord , getPossibleWords, getNewCard, randomWord, dictionary } from '../utils/wordutils';
+import { removeLetter, updateWordAndRemoveCard, setCardLocation, setDropLocation, addPlayerCard, seedWord, setPlayerCards, cycleMode, clearMostRecentCards, setOriginalWord } from '../Redux/action-creators.js';
+import { isValidWord, getPossibleWords, getNewCard, randomWord, dictionary, getStandardStart, getPathStart } from '../utils/wordutils';
 // import wordlist from '../Dictionary/wordlist.js';
 // import commonWordList from '../Dictionary/commonwordlist.js';
 
@@ -39,15 +39,7 @@ export default class Viewport extends Component {
 
   componentDidMount() {
     this.unsubscribe = store.subscribe(() => { this.setState(store.getState()) });
-
-    let newWord = randomWord();
-    store.dispatch(seedWord(newWord));
-    let currentCards = [];
-    while (currentCards.length < STARTINGCARDS) {
-      currentCards.push(getNewCard(currentCards, newWord, this.state.mostRecentPlayerCards));
-    }
-    store.dispatch(setPlayerCards(currentCards));
-
+    this.reset();
   }
 
   componentWillUnmount() {
@@ -68,6 +60,7 @@ export default class Viewport extends Component {
       <View style={styles.mainContainer}>
         <View style={styles.topPad}>
           <Text style={styles.title}>WordScramble!</Text>
+          <Text style={styles.subtitle}>{`${this.state.mode} mode`}</Text>
         </View>
         <View
           onLayout={event => this.dropZone = event.nativeEvent.layout}
@@ -78,24 +71,63 @@ export default class Viewport extends Component {
         </View>
 
         <PlayerCards style={styles.playerCards} renderDraggable={this.renderDraggable} />
-        <Button
-          onPress={this.reset}
-          title="RESET"
-          color="#841584"
-          style={styles.button}
-          accessibilityLabel="Reset button"
-        />
+        <View style={{ flex: 1, flexDirection: 'row', alignContent: 'flex-end', justifyContent: 'space-between'}}>
+          <Button
+            onPress={this.changeMode}
+            title="MODE"
+            color="#841584"
+            style={styles.button}
+            accessibilityLabel="Change mode button"
+          />
+         {this.state.mode === 'path' ? <Button
+            onPress={this.reset}
+            title="REWIND"
+            color="#841584"
+            style={styles.button}
+            accessibilityLabel="Reset button"
+          /> : null }
+
+          <Button
+            onPress={this.rewind}
+            title="RESET"
+            color="#841584"
+            style={styles.button}
+            accessibilityLabel="Reset button"
+          />
+
+        </View>
       </View>
     );
   }
+
+  changeMode() {
+    store.dispatch(cycleMode());
+  }
+
+  rewind() {
+    let currentCards  = this.state.playerCards;
+    let usedCards = this.state.mostRecentPlayerCards;
+    let originalWord = this.state.originalWord;
+
+    store.dispatch(setPlayerCards(currentCards.concat(usedCards)));
+    store.dispatch(seedWord(originalWord));
+  }
+
   reset() {
-    let newWord = randomWord();
-    store.dispatch(seedWord(randomWord()));
-    let currentCards = [];
-    while (currentCards.length < STARTINGCARDS) {
-      currentCards.push(getNewCard(currentCards, newWord, this.state.mostRecentPlayerCards));
+    let newWord, newCards;
+    if(this.state.mode==='standard'){
+      let newCardsAndWord = getStandardStart();
+      newWord = newCardsAndWord.newWord;
+      newCards = newCardsAndWord.newCards;
+    } else if(this.state.mode === 'path'){
+      let newCardsAndWord = getPathStart();
+      newWord = newCardsAndWord.newWord;
+      newCards = newCardsAndWord.newCards;
     }
-    store.dispatch(setPlayerCards(currentCards));
+    store.dispatch(seedWord(newWord));
+    store.dispatch(clearMostRecentCards());
+    store.dispatch(setPlayerCards(newCards));
+    store.dispatch(setOriginalWord(newWord));
   }
 
   addElementToViewport(str) {
@@ -124,16 +156,18 @@ export default class Viewport extends Component {
   handleDropZone(str, xCoord) {
     let index = this.getIndex(xCoord);
     let newWord = this.state.word.split('');
-    if(index%1){
-      newWord.splice(index+.5,0,str);
-    }else{
+    if (index % 1) {
+      newWord.splice(index + .5, 0, str);
+    } else {
       newWord.splice(index, 1, str);
     }
     newWord = newWord.join('');
     if (isValidWord(newWord)) {
       store.dispatch(updateWordAndRemoveCard(newWord, str));
-      let newCard = getNewCard(this.state.playerCards, newWord, this.state.mostRecentPlayerCards);
-      store.dispatch(addPlayerCard(newCard));
+      if(this.mode==='standard'){
+        let newCard = getNewCard(this.state.playerCards, newWord, this.state.mostRecentPlayerCards);
+        store.dispatch(addPlayerCard(newCard));
+      }
       return true;
     }
     return false;
@@ -143,10 +177,10 @@ export default class Viewport extends Component {
     xCoord -= this.dropZone.x;
     let letters = this.state.dropLocations;
     for (var i = 0; i < Object.keys(letters).length; i++) {
-      if (xCoord< letters[i].x)return i-0.5;
+      if (xCoord < letters[i].x) return i - 0.5;
       if (xCoord > letters[i].x && xCoord < letters[i].x + letters[i].width) return i;
     }
-    return i-0.5;
+    return i - 0.5;
   }
 
 

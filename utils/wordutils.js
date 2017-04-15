@@ -37,6 +37,24 @@ export const dictionary = new Dictionary;
 
 dictionary.bulkAddWords(wordlist);
 
+export function getPathStart(){
+    let newCards=[];
+    let newWord = randomWord();
+    while (newCards.length < 10) {
+      newCards.push(getNewCard(newCards, newWord, []));
+    }
+    return {newWord, newCards};
+}
+
+export function getStandardStart(){
+    let newCards=[];
+    let newWord = randomWord();
+    while (newCards.length < 10) {
+      newCards.push(getNewCard(newCards, newWord, []));
+    }
+    return {newWord, newCards};
+}
+
 export function randomWord() {
   let temp = commonWordList[Math.floor(Math.random() * commonWordList.length)];
   while(temp.length!==4){

@@ -7,6 +7,26 @@ export function seedWord(word){
   }
 }
 
+export function setOriginalWord(word){
+  return {
+    type: 'SET_ORIGINAL_WORD',
+    word
+  }
+}
+
+export function clearMostRecentCards(){
+  return {
+    type: 'CLEAR_RECENT_CARDS'
+  }
+}
+
+export function cycleMode(mode = 'NEXT'){
+  return {
+    type: 'CHANGE_MODE',
+    mode
+  }
+}
+
 export function removeLetter(index){
   return {
     type: 'REMOVE_LETTER',

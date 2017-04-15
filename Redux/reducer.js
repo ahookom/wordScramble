@@ -7,7 +7,9 @@ let initialState = {
   cardLocations: {},
   cardCounter: 0,
   mostRecentPlayerCards: [],
-  mode: 'freePlay'
+  mode: 'standard',
+  possibleModes: ['standard','path'],
+  originalWord: ''
 }
 
 export default function(state = initialState, action){
@@ -15,6 +17,14 @@ export default function(state = initialState, action){
   let newState = Object.assign({}, state);
 
   switch (action.type){
+
+  case 'CLEAR_RECENT_CARDS':
+    newState.mostRecentPlayerCards = [];
+  break;
+
+  case 'SET_ORIGINAL_WORD':
+    newState.originalWord = action.word;
+  break;
 
   case 'SET_CARD_LOCATION':
     newState.cardLocations = Object.assign({}, newState.cardLocations, {[action.letter]: action.layout})
@@ -27,7 +37,11 @@ export default function(state = initialState, action){
   case 'UPDATE_WORD':
     newState.word = action.word;
     newState.playerCards = newState.playerCards.filter(card=>card!==action.card);
-    newState.mostRecentPlayerCards = [...newState.mostRecentPlayerCards.slice(-5), action.card];
+    if(newState.mode==='path'){
+      newState.mostRecentPlayerCards = [...newState.mostRecentPlayerCards, action.card];
+    }else{
+      newState.mostRecentPlayerCards = [...newState.mostRecentPlayerCards.slice(-4), action.card];
+    }
   break;
 
   case 'ADD_PLAYER_CARD':
@@ -44,7 +58,12 @@ export default function(state = initialState, action){
   break;
 
   case 'CHANGE_MODE':
-    newState.mode = action.mode;
+    if(action.mode!=='NEXT') newState.mode = action.mode;
+    else{
+      let currentModeIndex = newState.possibleModes.indexOf(newState.mode);
+      newState.mode = newState.possibleModes[(currentModeIndex+1)%newState.possibleModes.length];
+    }
+  break;
 
   case 'REMOVE_LETTER':
     let temp = newState.word.split('')

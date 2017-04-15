@@ -13,12 +13,14 @@ let styles = StyleSheet.create({
     backgroundColor: '#2a3a30'
   },
   topPad: {
-    flex: 1,
-    alignItems: 'flex-end'
+    flex: 2
   },
   button: {
     flex: 1,
-    marginBottom: 50
+    marginBottom: 0,
+    borderStyle: 'solid',
+    borderRadius: 10,
+    overflow: 'hidden'
   },
   word: {
     flexDirection: 'row',
@@ -33,7 +35,7 @@ let styles = StyleSheet.create({
     overflow: 'hidden'
   },
   playerCards: {
-    flex: 2,
+    flex: 3,
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'flex-start',
@@ -60,6 +62,14 @@ let styles = StyleSheet.create({
     textAlign: 'center',
     color: '#6495ed',
     fontSize: 50,
+  },
+  subtitle: {
+    marginTop: 10,
+    marginLeft: 5,
+    marginRight: 5,
+    textAlign: 'center',
+    color: '#6495ed',
+    fontSize: 30,
   },
   letter: {
     textAlign: 'center',
