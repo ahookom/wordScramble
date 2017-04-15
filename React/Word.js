@@ -5,6 +5,7 @@ import store from '../Redux/store.js';
 import {setDropLocation} from '../Redux/action-creators.js';
 import Border from './Border.js';
 import Letter from './Letter.js';
+import { isValidWord } from '../utils/wordutils';
 
 class Word extends Component {
 
@@ -25,7 +26,7 @@ class Word extends Component {
     return (
       <View style={styles.word}>
         {this.props.word.split('').map((letter, key) => (
-          <Letter isValidWord={this.props.isValidWord} key={key} letter={letter} index={key} wordLength={this.props.word.length} word={this.props.word} />
+          <Letter key={key} letter={letter} index={key} wordLength={this.props.word.length} word={this.props.word} />
         ))}
       </View>
     );

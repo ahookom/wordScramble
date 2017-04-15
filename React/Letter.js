@@ -4,13 +4,13 @@ import {View, Text, Animated, PanResponder} from 'react-native';
 import store from '../Redux/store';
 import {removeLetter} from '../Redux/action-creators';
 import {setDropLocation} from '../Redux/action-creators.js';
+import { isValidWord } from '../utils/wordutils';
 
 export default class Letter extends Component{
   constructor(props){
     super(props);
     this.state = {responder:{}};
     this.letterResponders = {};
-    this.isValidWord=this.props.isValidWord;
   }
 
   componentDidMount() {
@@ -26,7 +26,7 @@ export default class Letter extends Component{
   makesValidWord(index){
     let newWord = this.props.word.split('');
     newWord.splice(index,1);
-    return this.isValidWord(newWord.join(''));
+    return isValidWord(newWord.join(''));
   }
 
   createLetterResponder(index) {
