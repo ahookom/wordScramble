@@ -9,7 +9,8 @@ let initialState = {
   mostRecentPlayerCards: [],
   mode: 'standard',
   possibleModes: ['standard','path'],
-  originalWord: ''
+  originalWord: '',
+  targetWord: ''
 }
 
 export default function(state = initialState, action){
@@ -58,6 +59,7 @@ export default function(state = initialState, action){
   break;
 
   case 'CHANGE_MODE':
+    console.log('changing mode in reducer with action.mode',action.mode, 'current', newState.mode);
     if(action.mode!=='NEXT') newState.mode = action.mode;
     else{
       let currentModeIndex = newState.possibleModes.indexOf(newState.mode);

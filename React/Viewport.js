@@ -13,7 +13,7 @@ import Word from './Word';
 import PlayerCards from './PlayerCards';
 import styles from '../Styles/styles.js';
 import store from '../Redux/store.js';
-import { removeLetter, updateWordAndRemoveCard, setCardLocation, setDropLocation, addPlayerCard, seedWord, setPlayerCards, cycleMode, clearMostRecentCards, setOriginalWord } from '../Redux/action-creators.js';
+import { removeLetter, updateWordAndRemoveCard, setCardLocation, setDropLocation, addPlayerCard, seedWord, setPlayerCards, setTargetWord, cycleMode, clearMostRecentCards, setOriginalWord } from '../Redux/action-creators.js';
 import { isValidWord, getPossibleWords, getNewCard, randomWord, dictionary, getStandardStart, getPathStart } from '../utils/wordutils';
 // import wordlist from '../Dictionary/wordlist.js';
 // import commonWordList from '../Dictionary/commonwordlist.js';
@@ -35,6 +35,8 @@ export default class Viewport extends Component {
     // this.createLetterResponder = this.createLetterResponder.bind(this);
     this.handleDropZone = this.handleDropZone.bind(this);
     this.reset = this.reset.bind(this);
+    this.rewind = this.rewind.bind(this);
+    this.changeMode = this.changeMode.bind(this);
   }
 
   componentDidMount() {
@@ -80,15 +82,15 @@ export default class Viewport extends Component {
             accessibilityLabel="Change mode button"
           />
          {this.state.mode === 'path' ? <Button
-            onPress={this.reset}
+            onPress={this.rewind}
             title="REWIND"
             color="#841584"
             style={styles.button}
-            accessibilityLabel="Reset button"
+            accessibilityLabel="Start over with puzzle button"
           /> : null }
 
           <Button
-            onPress={this.rewind}
+            onPress={this.reset}
             title="RESET"
             color="#841584"
             style={styles.button}
@@ -102,6 +104,7 @@ export default class Viewport extends Component {
 
   changeMode() {
     store.dispatch(cycleMode());
+    setTimeout(()=>this.reset(),0);
   }
 
   rewind() {
@@ -114,11 +117,12 @@ export default class Viewport extends Component {
   }
 
   reset() {
-    let newWord, newCards;
+    let newWord, newCards,targetWord;
     if(this.state.mode==='standard'){
       let newCardsAndWord = getStandardStart();
       newWord = newCardsAndWord.newWord;
       newCards = newCardsAndWord.newCards;
+      targetWord = newCardsAndWord.targetWord;
     } else if(this.state.mode === 'path'){
       let newCardsAndWord = getPathStart();
       newWord = newCardsAndWord.newWord;
@@ -128,6 +132,7 @@ export default class Viewport extends Component {
     store.dispatch(clearMostRecentCards());
     store.dispatch(setPlayerCards(newCards));
     store.dispatch(setOriginalWord(newWord));
+    if(targetWord)store.dispatch(setTargetWord(targetWord));
   }
 
   addElementToViewport(str) {
@@ -164,7 +169,7 @@ export default class Viewport extends Component {
     newWord = newWord.join('');
     if (isValidWord(newWord)) {
       store.dispatch(updateWordAndRemoveCard(newWord, str));
-      if(this.mode==='standard'){
+      if(this.state.mode==='standard'){
         let newCard = getNewCard(this.state.playerCards, newWord, this.state.mostRecentPlayerCards);
         store.dispatch(addPlayerCard(newCard));
       }

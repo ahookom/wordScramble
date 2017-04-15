@@ -20,7 +20,6 @@ export default class PlayerCards extends Component{
   render(){
     let rows =[];
     let subtotal=0;
-    console.log('PlayerCards render',this.state.playerCards)
     while(this.state.playerCards.length-subtotal>5){
       rows.push(this.state.playerCards.slice(subtotal,subtotal+5));
       subtotal+=5;

@@ -2,6 +2,9 @@ import Dictionary from '../Dictionary/Dictionary.js';
 import wordlist from '../Dictionary/wordlist.js';
 import commonWordList from '../Dictionary/commonwordlist.js';
 
+const MIN_WORD_LENGTH = 3;
+const MAX_WORD_LENGTH = 5;
+
 const LETTER_FREQUENCIES = {
   A: 8.12,
   B: 1.49,
@@ -39,25 +42,45 @@ dictionary.bulkAddWords(wordlist);
 
 export function getPathStart(){
     let newCards=[];
-    let newWord = randomWord();
-    while (newCards.length < 10) {
-      newCards.push(getNewCard(newCards, newWord, []));
+    let newWord = randomWord(3+Math.floor(Math.random()*2));
+    let wordArr= [];
+    wordArr.push(newWord);
+    newCards.push(getNewCard());
+    newCards.push(getNewCard());
+    let changes = 0;
+    while(wordArr.length<6){
+      let possible=getPossibleWords(wordArr[changes],newCards);
+      console.log(possible);
+      if(possible.length<2)return getPathStart();
+      updatedWord = possible[Math.floor(Math.random()*possible.length)]
+      wordArr.push(updatedWord);
+      if(updatedWord.length>wordArr[changes].length){
+        let diff = updatedWord.split('').filter(letter=>updatedWord.indexOf(letter)!==wordArr[changes].indexOf(letter)||updatedWord.lastIndexOf(letter)!==wordArr[changes].lastIndexOf(letter));
+        if(diff.length===1){
+          newCards=newCards.concat(diff);
+        }else{
+          console.error('your getPathStart encountered an error comparing', updatedWord, 'and', wordArr);
+        }
+      }
+      changes++;
     }
-    return {newWord, newCards};
+    let targetWord = wordArr[wordArr.length-1];
+    console.log('end of pathstart');
+    return {newWord, newCards, targetWord};
 }
 
 export function getStandardStart(){
     let newCards=[];
-    let newWord = randomWord();
+    let newWord = randomWord(4);
     while (newCards.length < 10) {
       newCards.push(getNewCard(newCards, newWord, []));
     }
     return {newWord, newCards};
 }
 
-export function randomWord() {
+export function randomWord(length) {
   let temp = commonWordList[Math.floor(Math.random() * commonWordList.length)];
-  while(temp.length!==4){
+  while(temp.length!==length){
     temp = commonWordList[Math.floor(Math.random() * commonWordList.length)];
   }
   return temp;
@@ -67,7 +90,7 @@ export function isValidWord(word) {
     return dictionary.search(word);
 }
 
-export function getNewCard(currentCards, word, mostRecent) {
+export function getNewCard(currentCards=[], word='', mostRecent=[]) {
   if(LETTER_TABLE.length===0)seedLetterTable();
 
   let invalid = currentCards.join('') + word + mostRecent.join('');
@@ -97,14 +120,14 @@ export function seedLetterTable(){
 }
 
 
-export function getPossibleWords() {
+export function getPossibleWords(word, cards=[]) {
+  console.log('getPossible');
   let possibleWords = [];
-  const word = this.state.word;
-  const currentCards = this.state.playerCards;
+  const currentCards = cards;
   //try removing each letter
   for(let i = 0 ; i<word.length;i++){
     let newWord = word.slice(0,i)+word.slice(i+1);
-    if(this.isValidWord(newWord)){
+    if(isValidWord(newWord)){
       possibleWords.push(newWord)
     }
   }
@@ -112,7 +135,7 @@ export function getPossibleWords() {
   currentCards.forEach(letter=>{
     for(let i = 0 ; i<=word.length;i++){
       let newWord = word.slice(0, i) + letter + word.slice(i);
-      if(this.isValidWord(newWord)){
+      if(isValidWord(newWord)){
         possibleWords.push(newWord)
       }
     }
@@ -121,12 +144,12 @@ export function getPossibleWords() {
   currentCards.forEach(letter=>{
     for (let i = 0 ; i < word.length;i++){
       let newWord = word.slice(0,i) + letter + word.slice(i+1);
-      if (this.isValidWord(newWord)){
+      if (isValidWord(newWord)){
         possibleWords.push(newWord)
       }
     }
   })
-
+console.log('end of getPossible', possibleWords);
   return possibleWords;
 
 }

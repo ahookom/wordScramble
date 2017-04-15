@@ -57,6 +57,13 @@ export function addPlayerCard(card){
   }
 }
 
+export function setTargetWord(word){
+  return {
+    type: 'SET_TARGET_WORD',
+    target: word
+  }
+}
+
 export function setPlayerCards(array){
   return {
     type: 'SET_PLAYER_CARDS',
