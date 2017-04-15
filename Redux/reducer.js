@@ -6,7 +6,8 @@ let initialState = {
   dropLocations: {},
   cardLocations: {},
   cardCounter: 0,
-  mostRecentPlayerCards: []
+  mostRecentPlayerCards: [],
+  mode: 'freePlay'
 }
 
 export default function(state = initialState, action){
@@ -41,6 +42,9 @@ export default function(state = initialState, action){
   case 'SEED_WORD':
     newState.word = action.word;
   break;
+
+  case 'CHANGE_MODE':
+    newState.mode = action.mode;
 
   case 'REMOVE_LETTER':
     let temp = newState.word.split('')
