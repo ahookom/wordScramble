@@ -19,6 +19,10 @@ export default function(state = initialState, action){
 
   switch (action.type){
 
+  case 'SET_TARGET_WORD':
+   newState.targetWord = action.target;
+  break;
+
   case 'CLEAR_RECENT_CARDS':
     newState.mostRecentPlayerCards = [];
   break;
@@ -37,7 +41,7 @@ export default function(state = initialState, action){
 
   case 'UPDATE_WORD':
     newState.word = action.word;
-    newState.playerCards = newState.playerCards.filter(card=>card!==action.card);
+    newState.playerCards = newState.playerCards.slice(0,action.card.indexOfCard).concat(newState.playerCards.slice(action.card.indexOfCard+1));
     if(newState.mode==='path'){
       newState.mostRecentPlayerCards = [...newState.mostRecentPlayerCards, action.card];
     }else{

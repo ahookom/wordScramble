@@ -63,6 +63,7 @@ export default class Viewport extends Component {
         <View style={styles.topPad}>
           <Text style={styles.title}>WordScramble!</Text>
           <Text style={styles.subtitle}>{`${this.state.mode} mode`}</Text>
+          {this.state.mode==='path'? <Text style={styles.subtitle}>{`target word: ${this.state.targetWord}`}</Text> : null }
         </View>
         <View
           onLayout={event => this.dropZone = event.nativeEvent.layout}
@@ -122,11 +123,12 @@ export default class Viewport extends Component {
       let newCardsAndWord = getStandardStart();
       newWord = newCardsAndWord.newWord;
       newCards = newCardsAndWord.newCards;
-      targetWord = newCardsAndWord.targetWord;
+
     } else if(this.state.mode === 'path'){
       let newCardsAndWord = getPathStart();
       newWord = newCardsAndWord.newWord;
       newCards = newCardsAndWord.newCards;
+      targetWord = newCardsAndWord.targetWord;
     }
     store.dispatch(seedWord(newWord));
     store.dispatch(clearMostRecentCards());
@@ -143,22 +145,22 @@ export default class Viewport extends Component {
   }
 
   renderDraggable(str, index) {
-    if (!this.pan[str]) this.pan[str] = new Animated.ValueXY;
-    if (!this.panResponders[str]) this.createCardResponder(str);
-    let panResponder = this.panResponders[str];
+    if (!this.pan[str+index]) this.pan[str+index] = new Animated.ValueXY;
+    if (!this.panResponders[str+index]) this.createCardResponder(str,index);
+    let panResponder = this.panResponders[str+index];
     return (
       <Animated.View
         key={index}
         {...panResponder.panHandlers}
         ref={this.addElementToViewport(str)}
         onLayout={setLocationOfCard(str)}
-        style={[this.pan[str].getLayout(), styles.circle, styles.draggableContainer]}>
+        style={[this.pan[str+index].getLayout(), styles.circle, styles.draggableContainer]}>
         <Text style={styles.text}>{str}</Text>
       </Animated.View>
     );
   }
 
-  handleDropZone(str, xCoord) {
+  handleDropZone(str, indexOfCard, xCoord) {
     let index = this.getIndex(xCoord);
     let newWord = this.state.word.split('');
     if (index % 1) {
@@ -168,7 +170,7 @@ export default class Viewport extends Component {
     }
     newWord = newWord.join('');
     if (isValidWord(newWord)) {
-      store.dispatch(updateWordAndRemoveCard(newWord, str));
+      store.dispatch(updateWordAndRemoveCard(newWord, {indexOfCard, str}));
       if(this.state.mode==='standard'){
         let newCard = getNewCard(this.state.playerCards, newWord, this.state.mostRecentPlayerCards);
         store.dispatch(addPlayerCard(newCard));
@@ -189,29 +191,29 @@ export default class Viewport extends Component {
   }
 
 
-  createCardResponder(str) {
-    this.panResponders[str] = PanResponder.create({
+  createCardResponder(str,index) {
+    this.panResponders[str+index] = PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onPanResponderGrant: (event, gesture) => {
-        this.pan[str].setOffset({ x: 0, y: 0 });
-        this.pan[str].setValue({ x: 0, y: 0 });
+        this.pan[str+index].setOffset({ x: 0, y: 0 });
+        this.pan[str+index].setValue({ x: 0, y: 0 });
       },
       onPanResponderMove: (event, gesture) => {
-        this.pan[str].x.setValue(gesture.dx);
-        this.pan[str].y.setValue(gesture.dy);
+        this.pan[str+index].x.setValue(gesture.dx);
+        this.pan[str+index].y.setValue(gesture.dy);
       },
       onPanResponderRelease: (e, gesture) => {
-        if (this.isDropZone(gesture.moveX, gesture.moveY) && this.handleDropZone(str, gesture.moveX)) {
-          this.pan[str] = null;
+        if (this.isDropZone(gesture.moveX, gesture.moveY) && this.handleDropZone(str, index, gesture.moveX)) {
+          this.pan[str+index] = null;
         } else {
           Animated.spring(
-            this.pan[str],
+            this.pan[str+index],
             { toValue: { x: 0, y: 0 } }
           ).start();
         }
       },
     })
-    return this.panResponders[str];
+    return this.panResponders[str+index];
   }
 
 }
