@@ -42,11 +42,12 @@ export function setCardLocation(letter, layout){
   }
 }
 
-export function updateWordAndRemoveCard(word,card){
+export function updateWordAndRemoveCard(word,str,index){
+  if (!(index+1))index = Infinity;
   return {
     type: 'UPDATE_WORD',
     word,
-    card
+    card: {str, index}
   }
 }
 

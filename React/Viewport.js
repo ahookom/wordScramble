@@ -170,7 +170,7 @@ export default class Viewport extends Component {
     }
     newWord = newWord.join('');
     if (isValidWord(newWord)) {
-      store.dispatch(updateWordAndRemoveCard(newWord, {indexOfCard, str}));
+      store.dispatch(updateWordAndRemoveCard(newWord, str, indexOfCard));
       if(this.state.mode==='standard'){
         let newCard = getNewCard(this.state.playerCards, newWord, this.state.mostRecentPlayerCards);
         store.dispatch(addPlayerCard(newCard));

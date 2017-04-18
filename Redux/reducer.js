@@ -41,9 +41,13 @@ export default function(state = initialState, action){
 
   case 'UPDATE_WORD':
     newState.word = action.word;
-    newState.playerCards = newState.playerCards.slice(0,action.card.indexOfCard).concat(newState.playerCards.slice(action.card.indexOfCard+1));
+    if(action.card.index<Infinity){
+      newState.playerCards = newState.playerCards.slice(0,action.card.index).concat(newState.playerCards.slice(action.card.index+1));
+    }else{
+      newState.playerCards = newState.playerCards.filter(str=>str!==action.card.str);
+    }
     if(newState.mode==='path'){
-      newState.mostRecentPlayerCards = [...newState.mostRecentPlayerCards, action.card];
+      newState.mostRecentPlayerCards = [...newState.mostRecentPlayerCards, action.card.str];
     }else{
       newState.mostRecentPlayerCards = [...newState.mostRecentPlayerCards.slice(-4), action.card];
     }
