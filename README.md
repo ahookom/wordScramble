@@ -1,6 +1,6 @@
 # WordScramble
 
-WordScramble is a game build with ReactNative where players create new English words from old ones by adding/removing/swapping single letters.
+WordScramble is a game built with ReactNative where players create new English words from old ones by adding/removing/swapping single letters.
 It has two modes: "standard" and "path." In "standard" mode, the player maintains a hand of 10 new letters to pick from to alter the current word, and goes as long as she can stay alive.
 In "path" mode, the player is given a specific starting word and target word, and a limited number of letters to use to reach the target word.
 
