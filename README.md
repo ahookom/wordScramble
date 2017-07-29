@@ -1,4 +1,4 @@
-# wordScramble
+# WordScramble
 
 WordScramble is a game build with ReactNative where players create new English words from old ones by adding/removing/swapping single letters.
 It has two modes: "standard" and "path." In "standard" mode, the player maintains a hand of 10 new letters to pick from to alter the current word, and goes as long as she can stay alive.
@@ -38,4 +38,4 @@ or
 react-native run-ios
 ```
 
-That will open a terminal that will serve up debugging information to localhost:8081. You can open a console in a browser to see debugging statements get triggered as you use the app in your emulator/phone.
+That will both open the application itself as well as a terminal that will serve up debugging information to localhost:8081. To see that debugging information, navigate to localhost:8081 inside a web browser and open the developer console to see any console.log outputs that get generated as you use your application in the emulator/phone.
