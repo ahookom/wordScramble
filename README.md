@@ -4,6 +4,20 @@ WordScramble is a game built with ReactNative where players create new English w
 It has two modes: "standard" and "path." In "standard" mode, the player maintains a hand of 10 new letters to pick from to alter the current word, and goes as long as she can stay alive.
 In "path" mode, the player is given a specific starting word and target word, and a limited number of letters to use to reach the target word.
 
+# Standard Mode
+
+![z_49CD](http://i.makeagif.com/media/7-30-2017/z_49CD.gif)
+
+
+
+# Path Mode
+
+![aS3rdE](http://i.makeagif.com/media/7-30-2017/aS3rdE.gif)
+
+
+
+# Development
+
 To get started developing wordScramble, clone the repo:
 
 ```
