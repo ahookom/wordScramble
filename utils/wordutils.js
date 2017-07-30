@@ -41,35 +41,35 @@ export const dictionary = new Dictionary;
 dictionary.bulkAddWords(wordlist);
 
 export function getPathStart(){
-    let newCards=[];
-    let newWord = randomWord(3+Math.floor(Math.random()*2));
-    let wordArr= [];
+    let newCards = [];
+    let newWord = randomWord(3 + Math.floor(Math.random() * 2));
+    let wordArr = [];
     let updatedWord;
     wordArr.push(newWord);
     let changes = 0;
-    while(wordArr.length<6){
-      let possible=getAllCommonReachableWords(wordArr,wordArr[changes]);
-      if(possible.length<2)return getPathStart();
-      updatedWord = possible[Math.floor(Math.random()*possible.length)];
+    while (wordArr.length < 5){
+      let possible = getAllCommonReachableWords(wordArr, wordArr[changes]);
+      if (possible.length < 2) return getPathStart();
+      updatedWord = possible[Math.floor(Math.random() * possible.length)];
       wordArr.push(updatedWord);
-      if(updatedWord.length>=wordArr[changes].length){
+      if (updatedWord.length >= wordArr[changes].length){
         let diff;
-        let index=0;
-        while(updatedWord.charAt(index)===wordArr[changes].charAt(index)){
+        let index = 0;
+        while (updatedWord.charAt(index) === wordArr[changes].charAt(index)){
           index++;
         }
-        diff=updatedWord[index];
-        newCards=newCards.concat(diff);
+        diff = updatedWord[index];
+        newCards = newCards.concat(diff);
       }
       changes++;
     }
-    let targetWord = wordArr[wordArr.length-1];
+    let targetWord = wordArr[wordArr.length - 1];
     console.log('end of pathstart', wordArr, targetWord);
     return {newWord, newCards, targetWord};
 }
 
 export function getStandardStart(){
-    let newCards=[];
+    let newCards = [];
     let newWord = randomWord(4);
     while (newCards.length < 10) {
       newCards.push(getNewCard(newCards, newWord, []));
@@ -79,7 +79,7 @@ export function getStandardStart(){
 
 export function randomWord(length) {
   let temp = commonWordList[Math.floor(Math.random() * commonWordList.length)];
-  while(temp.length!==length){
+  while (temp.length !== length){
     temp = commonWordList[Math.floor(Math.random() * commonWordList.length)];
   }
   return temp;
@@ -89,8 +89,8 @@ export function isValidWord(word) {
     return dictionary.search(word);
 }
 
-export function getNewCard(currentCards=[], word='', mostRecent=[]) {
-  if(LETTER_TABLE.length===0)seedLetterTable();
+export function getNewCard(currentCards = [], word = '', mostRecent = []) {
+  if (LETTER_TABLE.length === 0)seedLetterTable();
 
   let invalid = currentCards.join('') + word + mostRecent.join('');
 
@@ -109,9 +109,9 @@ export function getNewCard(currentCards=[], word='', mostRecent=[]) {
 export function seedLetterTable(){
   let letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   let letterArr = letters.split('');
-  letterArr.forEach(letter=>{
-    let desiredNumber = Math.round(LETTER_FREQUENCIES[letter]*100);
-    while(desiredNumber){
+  letterArr.forEach(letter => {
+    let desiredNumber = Math.round(LETTER_FREQUENCIES[letter] * 100);
+    while (desiredNumber){
       LETTER_TABLE.push(letter);
       desiredNumber--;
     }
@@ -119,65 +119,64 @@ export function seedLetterTable(){
 }
 
 
-export function getPossibleWords(word, cards=[]) {
-  console.log('getPossible');
+export function getPossibleWords(word, cards = []) {
+
   let possibleWords = [];
   const currentCards = cards;
   //try removing each letter
-  for(let i = 0 ; i<word.length;i++){
-    let newWord = word.slice(0,i)+word.slice(i+1);
-    if(isValidWord(newWord)){
+  for (let i = 0 ; i < word.length;i++){
+    let newWord = word.slice(0, i) + word.slice(i + 1);
+    if (isValidWord(newWord)){
       possibleWords.push(newWord)
     }
   }
   //try adding each letter to each position
-  currentCards.forEach(letter=>{
-    for(let i = 0 ; i<=word.length;i++){
+  currentCards.forEach(letter => {
+    for (let i = 0 ; i <= word.length;i++){
       let newWord = word.slice(0, i) + letter + word.slice(i);
-      if(isValidWord(newWord)){
-        possibleWords.push(newWord)
-      }
-    }
-  })
-  //try substituting each letter into each position
-  currentCards.forEach(letter=>{
-    for (let i = 0 ; i < word.length;i++){
-      let newWord = word.slice(0,i) + letter + word.slice(i+1);
       if (isValidWord(newWord)){
         possibleWords.push(newWord)
       }
     }
   })
-  possibleWords=possibleWords.filter(thisWord=>thisWord!==word);
-console.log('end of getPossible', possibleWords);
+  //try substituting each letter into each position
+  currentCards.forEach(letter => {
+    for (let i = 0 ; i < word.length;i++){
+      let newWord = word.slice(0, i) + letter + word.slice(i + 1);
+      if (isValidWord(newWord)){
+        possibleWords.push(newWord)
+      }
+    }
+  })
+  possibleWords = possibleWords.filter(thisWord => thisWord !== word);
   return possibleWords;
 
 }
 
-export function getAllCommonReachableWords(alreadyUsed, word, cards='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')) {
+export function getAllCommonReachableWords(alreadyUsed, word, cards = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')) {
   let possibleWords = [];
   const currentCards = cards;
   //try removing each letter
-  for(let i = 0 ; i<word.length;i++){
-    let newWord = word.slice(0,i)+word.slice(i+1);
-    if(newWord!==word&&isCommonWord(newWord)&&!alreadyUsed.includes(newWord)){
+  for (let i = 0 ; i < word.length;i++){
+    let newWord = word.slice(0, i) + word.slice(i + 1);
+    if (newWord !== word && isCommonWord(newWord) && !alreadyUsed.includes(newWord)){
       possibleWords.push(newWord)
     }
   }
   //try adding each letter to each position
-  currentCards.forEach(letter=>{
-    for(let i = 0 ; i<=word.length;i++){
+  currentCards.forEach(letter => {
+    for (let i = 0 ; i <= word.length;i++){
       let newWord = word.slice(0, i) + letter + word.slice(i);
-      if(newWord!==word&&isCommonWord(newWord)&&!alreadyUsed.includes(newWord)){
+      if (newWord !== word && isCommonWord(newWord) && !alreadyUsed.includes(newWord)){
         possibleWords.push(newWord)
       }
     }
   })
   //try substituting each letter into each position
-  currentCards.forEach(letter=>{
+  currentCards.forEach(letter => {
     for (let i = 0 ; i < word.length;i++){
-      let newWord = word.slice(0,i) + letter + word.slice(i+1);
-      if (newWord!==word&&isCommonWord(newWord)&&!alreadyUsed.includes(newWord)){
+      let newWord = word.slice(0, i) + letter + word.slice(i + 1);
+      if (newWord !== word && isCommonWord(newWord) && !alreadyUsed.includes(newWord)){
         possibleWords.push(newWord)
       }
     }

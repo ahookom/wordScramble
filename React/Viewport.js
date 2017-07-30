@@ -18,7 +18,7 @@ import { isValidWord, getPossibleWords, getNewCard, randomWord, dictionary, getS
 // import wordlist from '../Dictionary/wordlist.js';
 // import commonWordList from '../Dictionary/commonwordlist.js';
 
-const STARTINGCARDS = 10;
+const STARTINGCARDS = 5;
 
 
 export default class Viewport extends Component {
